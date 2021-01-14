@@ -1,7 +1,4 @@
-﻿using Surging.Core.CPlatform.Ioc;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Surging.Cloud.CPlatform.Ioc;
 
 namespace Surging.Hero.Auth.Domain.Users
 {

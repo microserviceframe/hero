@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Surging.Core.Dapper.Repositories;
-using Surging.Core.ProxyGenerator;
-using Surging.Core.Validation.DataAnnotationValidation;
+using Surging.Cloud.Dapper.Repositories;
+using Surging.Cloud.ProxyGenerator;
+using Surging.Cloud.Validation.DataAnnotationValidation;
 using Surging.Hero.Organization.Domain.Organizations.Departments;
 using Surging.Hero.Organization.IApplication.Department;
 using Surging.Hero.Organization.IApplication.Department.Dtos;
@@ -14,7 +14,8 @@ namespace Surging.Hero.Organization.Application.Department
         private readonly IDapperRepository<Domain.Department, long> _departmentRepository;
 
         public DepartmentAppService(IDepartmentDomainService departmentDomainService,
-            IDapperRepository<Domain.Department, long> departmentRepository) {
+            IDapperRepository<Domain.Department, long> departmentRepository)
+        {
             _departmentDomainService = departmentDomainService;
             _departmentRepository = departmentRepository;
         }
@@ -22,9 +23,7 @@ namespace Surging.Hero.Organization.Application.Department
         public async Task<bool> Check(long orgId)
         {
             var department = await _departmentRepository.SingleOrDefaultAsync(p => p.OrgId == orgId);
-            if (department == null) {
-                return false;
-            }
+            if (department == null) return false;
             return true;
         }
 
@@ -32,7 +31,6 @@ namespace Surging.Hero.Organization.Application.Department
         {
             input.CheckDataAnnotations().CheckValidResult();
             return await _departmentDomainService.CreateDepartment(input);
-            
         }
 
         public async Task<string> DeleteByOrgId(long orgId)
@@ -55,7 +53,6 @@ namespace Surging.Hero.Organization.Application.Department
         {
             input.CheckDataAnnotations().CheckValidResult();
             return await _departmentDomainService.UpdateDepartment(input);
-            
         }
     }
 }

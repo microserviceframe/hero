@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Surging.Core.AutoMapper;
-using Surging.Core.CPlatform;
-using Surging.Core.CPlatform.Exceptions;
-using Surging.Core.CPlatform.Routing;
-using Surging.Core.CPlatform.Utilities;
+using Surging.Cloud.AutoMapper;
+using Surging.Cloud.CPlatform;
+using Surging.Cloud.CPlatform.Exceptions;
+using Surging.Cloud.CPlatform.Routing;
+using Surging.Cloud.CPlatform.Transport.Implementation;
+using Surging.Cloud.CPlatform.Utilities;
+using Surging.Hero.Auth.Domain.Permissions.Actions;
 using Surging.Hero.Auth.Domain.Permissions.Menus;
 using Surging.Hero.Auth.Domain.Permissions.Operations;
 using Surging.Hero.Auth.Domain.Roles;
-using Surging.Hero.Auth.Domain.Shared.Menus;
-using Surging.Hero.Auth.Domain.Shared.Permissions;
+using Surging.Hero.Auth.Domain.Shared;
+using Surging.Hero.Auth.Domain.Shared.Operations;
 using Surging.Hero.Auth.Domain.UserGroups;
 using Surging.Hero.Auth.Domain.Users;
 using Surging.Hero.Auth.IApplication.Role.Dtos;
@@ -28,12 +29,13 @@ namespace Surging.Hero.Auth.Domain.Permissions
         private readonly IUserDomainService _userDomainService;
         private readonly IUserGroupDomainService _userGroupDomainService;
 
-        public PermissionDomainService(IMenuDomainService menuDomainService, 
-            IOperationDomainService operationDomainService, 
-            IRoleDomainService roleDomainService, 
+        public PermissionDomainService(IMenuDomainService menuDomainService,
+            IOperationDomainService operationDomainService,
+            IRoleDomainService roleDomainService,
             IServiceRouteProvider serviceRouteProvider,
             IUserDomainService userDomainService,
-            IUserGroupDomainService userGroupDomainService) {
+            IUserGroupDomainService userGroupDomainService)
+        {
             _menuDomainService = menuDomainService;
             _operationDomainService = operationDomainService;
             _roleDomainService = roleDomainService;
@@ -42,29 +44,41 @@ namespace Surging.Hero.Auth.Domain.Permissions
             _userGroupDomainService = userGroupDomainService;
         }
 
-        public async Task<IEnumerable<GetRolePermissionTreeOutput>> GetRolePermissions(long roleId)
+        public async Task<IDictionary<string,object>> Check(long userId, string serviceId)
         {
-            var menus = await _menuDomainService.GetAll();
-            var operations = await _operationDomainService.GetAll();
-            var rolePermissions = await _roleDomainService.GetRolePermissions(roleId);
-
-            return BuildRolePermissionTree(menus,operations,rolePermissions);
-        }
-
-        private IEnumerable<GetRolePermissionTreeOutput> BuildRolePermissionTree(IEnumerable<Menu> menus, IEnumerable<Operation> operations, IEnumerable<RolePermission> rolePermissions)
-        {
-            var topMenus = menus.Where(p => p.Mold == MenuMold.Top);
-            var topMenuOutputs = topMenus.MapTo<IEnumerable<GetRolePermissionTreeOutput>>();
-            foreach (var topMenuOutput in topMenuOutputs) {
-                topMenuOutput.CheckStatus = rolePermissions.Any(p => p.PermissionId == topMenuOutput.PermissionId) ? CheckStatus.Checked : CheckStatus.UnChecked;
-                //topMenuOutput.PermissionMold = PermissionMold.Menu;
-                topMenuOutput.Children = BuildRolePermissionChildren(topMenuOutput, menus, operations, rolePermissions);
+            var permissionResult = new Dictionary<string, object>();
+            var servcieRoute = await _serviceRouteProvider.Locate(serviceId);
+            var isPermission = false;
+            if (servcieRoute.ServiceDescriptor.GetMetadata<bool>("AllowPermission")) isPermission = true;
+            var actionName = servcieRoute.ServiceDescriptor.GroupName().IsNullOrEmpty()
+                ? servcieRoute.ServiceDescriptor.RoutePath
+                : servcieRoute.ServiceDescriptor.GroupName();
+            if (!isPermission)
+            {
+                isPermission = await _userDomainService.CheckPermission(userId, serviceId);
+                if (!isPermission)
+                    throw new AuthException($"您没有{actionName}的权限", StatusCode.UnAuthorized);
             }
-            return topMenuOutputs;
+            permissionResult.Add("isPermission",isPermission);
+            var operations = await _operationDomainService.GetOperationsByServiceId(serviceId);
+            if (operations.Any())
+            {
+                var dataPermission = await _userDomainService.GetDataPermissions(userId, operations.First().PermissionId);
+                permissionResult.Add(ClaimTypes.DataPermission, dataPermission.DataPermissionType);
+                permissionResult.Add(ClaimTypes.DataPermissionOrgIds, dataPermission.DataPermissionOrgIds);
+                permissionResult.Add(ClaimTypes.IsAllOrg, dataPermission.DataPermissionType == DataPermissionType.AllOrg);
+                
+            }else{
+                permissionResult.Add(ClaimTypes.DataPermission, DataPermissionType.AllOrg);
+                permissionResult.Add(ClaimTypes.IsAllOrg, true);
+            }
 
+            return permissionResult;
         }
 
-        private IEnumerable<GetRolePermissionTreeOutput> BuildRolePermissionChildren(GetRolePermissionTreeOutput menuOutput, IEnumerable<Menu> menus, IEnumerable<Operation> operations, IEnumerable<RolePermission> rolePermissions)
+        private IEnumerable<GetRolePermissionTreeOutput> BuildRolePermissionChildren(
+            GetRolePermissionTreeOutput menuOutput, IEnumerable<Menu> menus, IEnumerable<Operation> operations,
+            IEnumerable<RolePermission> rolePermissions)
         {
             var children = new List<GetRolePermissionTreeOutput>();
             var menuChildren = menus.Where(p => p.ParentId == menuOutput.Id);
@@ -73,34 +87,16 @@ namespace Surging.Hero.Auth.Domain.Permissions
             var operationChildren = operations.Where(p => p.MenuId == menuOutput.Id);
             var operationChildrenOutputs = operationChildren.MapTo<IEnumerable<GetRolePermissionTreeOutput>>();
             foreach (var operationOutput in operationChildrenOutputs)
-            {
-                operationOutput.CheckStatus = rolePermissions.Any(p => p.PermissionId == menuOutput.PermissionId) ? CheckStatus.Checked : CheckStatus.UnChecked;
-                // operationOutput.PermissionMold = PermissionMold.Operation;
-            }
+                operationOutput.CheckStatus = rolePermissions.Any(p => p.PermissionId == menuOutput.PermissionId)
+                    ? CheckStatus.Checked
+                    : CheckStatus.UnChecked;
+            // operationOutput.PermissionMold = PermissionMold.Operation;
             children.AddRange(operationChildrenOutputs);
             if (menuChildrenOutputs.Any())
-            {
-                foreach (var menuChildOutput in menuChildrenOutputs) {
-                    menuChildOutput.Children = BuildRolePermissionChildren(menuChildOutput,menus,operations,rolePermissions);
-                }
-            }
+                foreach (var menuChildOutput in menuChildrenOutputs)
+                    menuChildOutput.Children =
+                        BuildRolePermissionChildren(menuChildOutput, menus, operations, rolePermissions);
             return children;
-        }
-
-        public async Task<bool> Check(long userId, string serviceId)
-        {
-            var servcieRoute = await _serviceRouteProvider.Locate(serviceId);
-
-            if (servcieRoute.ServiceDescriptor.GetMetadata<bool>("AllowPermission")) {
-                return true;
-            }
-            
-            var checkPermissionResult = await _userDomainService.CheckPermission(userId,serviceId) || await  _userGroupDomainService.CheckPermission(userId,serviceId);
-            if (!checkPermissionResult) {
-                var actionName = servcieRoute.ServiceDescriptor.GroupName().IsNullOrEmpty() ? servcieRoute.ServiceDescriptor.RoutePath : servcieRoute.ServiceDescriptor.GroupName();
-                throw new AuthException($"您没有访问{actionName}的权限");
-            }
-            return true;
         }
     }
 }

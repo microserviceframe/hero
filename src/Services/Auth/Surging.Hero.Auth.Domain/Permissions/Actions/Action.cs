@@ -1,7 +1,6 @@
-﻿
-using Surging.Core.Domain.Entities.Auditing;
+﻿using System;
+using Surging.Cloud.Domain.Entities.Auditing;
 using Surging.Hero.Common;
-using System;
 
 namespace Surging.Hero.Auth.Domain.Permissions.Actions
 {
@@ -13,6 +12,8 @@ namespace Surging.Hero.Auth.Domain.Permissions.Actions
         public string Name { get; set; }
 
         public string WebApi { get; set; }
+
+        public string Method { get; set; }
 
         public bool DisableNetwork { get; set; }
 

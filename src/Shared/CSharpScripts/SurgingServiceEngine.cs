@@ -1,5 +1,5 @@
-using Surging.Core.CPlatform.Engines.Implementation;
-using Surging.Core.CPlatform.Utilities;
+using Surging.Cloud.CPlatform.Engines.Implementation;
+using Surging.Cloud.CPlatform.Utilities;
 
 namespace Surging.Hero.ServiceHost
 {
@@ -7,11 +7,13 @@ namespace Surging.Hero.ServiceHost
     {
         public SurgingServiceEngine()
         {
-            ModuleServiceLocationFormats = new[] {
-                EnvironmentHelper.GetEnvironmentVariable("${ModulePath1}|Modules"),
+            ModuleServiceLocationFormats = new[]
+            {
+                EnvironmentHelper.GetEnvironmentVariable("${ModulePath1}|Modules")
             };
-            ComponentServiceLocationFormats = new[] {
-                 EnvironmentHelper.GetEnvironmentVariable("${ComponentPath1}|Components"),
+            ComponentServiceLocationFormats = new[]
+            {
+                EnvironmentHelper.GetEnvironmentVariable("${ComponentPath1}|Components")
             };
         }
     }

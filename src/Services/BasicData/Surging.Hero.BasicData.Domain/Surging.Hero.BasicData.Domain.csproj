@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CommonComponents\Surging.Hero.Common\Surging.Hero.Common.csproj" />
+    <ProjectReference Include="..\..\Auth\Surging.Hero.Auth.IApplication\Surging.Hero.Auth.IApplication.csproj" />
     <ProjectReference Include="..\Surging.Hero.BasicData.Domain.Shared\Surging.Hero.BasicData.Domain.Shared.csproj" />
     <ProjectReference Include="..\Surging.Hero.BasicData.IApplication\Surging.Hero.BasicData.IApplication.csproj" />
   </ItemGroup>

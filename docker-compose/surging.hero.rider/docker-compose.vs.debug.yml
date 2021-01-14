@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  surging.hero.auth:
+    environment:
+      LogPath: /app/configs/log4net.config
+    volumes:
+      - ../../src/Shared/Configs:/app/configs
+      - ../annotationxmldir:/app/annotationxmldir
+
+  surging.hero.basicdata:
+    environment:
+      LogPath: /app/configs/log4net.config
+    volumes:
+      - ../../src/Shared/Configs:/app/configs
+      - ../annotationxmldir:/app/annotationxmldir
+
+  surging.hero.organization:
+    environment:
+      LogPath: /app/configs/log4net.config
+    volumes:
+      - ../../src/Shared/Configs:/app/configs
+      - ../annotationxmldir:/app/annotationxmldir
+
+  surging.hero.gateway:
+    environment:
+      LogPath: /app/configs/log4net.config
+    volumes:
+      - ../../src/Shared/Configs:/app/configs
+      - ../annotationxmldir:/app/annotationxmldir
+
+  surging.hero.fileservice:
+    environment:
+      LogPath: /app/configs/log4net.config
+    volumes:
+      - ../../src/Shared/Configs:/app/configs
+      - ../annotationxmldir:/app/annotationxmldir  

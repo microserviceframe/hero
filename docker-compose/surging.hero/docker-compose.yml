@@ -60,6 +60,23 @@ services:
       - ${LOG_DIR:-/var/logs}/gateway:/app/logs
     networks:
       - surging_hero_service_net
+
+  surging.hero.fileservice:
+    image: surgingcloud/surging.hero.fileservice:${TAG:-latest}
+    build:
+      context: ../..
+      dockerfile: src/Services/FileService/Surging.Hero.FileServiceHost/Dockerfile
+      args:
+        host_workdir: src/Services/FileService/Surging.Hero.FileServiceHost
+        host_name: Surging.Hero.FileServiceHost.dll
+        sln_name: sln/Surging.Hero.sln        
+    depends_on:
+      - surging.hero.basicdata
+    volumes:
+      - ${LOG_DIR:-/var/logs}/fileservice:/app/logs
+    networks:
+      - surging_hero_service_net
+
 networks:
   surging_hero_service_net: 
     external:

@@ -1,8 +1,4 @@
-﻿using Surging.Hero.Common;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Surging.Hero.BasicData.IApplication.Wordbook.Dtos
 {
@@ -11,7 +7,7 @@ namespace Surging.Hero.BasicData.IApplication.Wordbook.Dtos
         public long WordbookId { get; set; }
 
         [Required(ErrorMessage = "字典项编码不允许为空")]
-        [RegularExpression(RegExpConstants.WordbookCode, ErrorMessage = "字典项编码格式不正确")]
+        [MaxLength(50, ErrorMessage = "字典项值长度不允许超过50")]
         public string Key { get; set; }
     }
 }

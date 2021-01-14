@@ -1,6 +1,5 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
 using Surging.Hero.Common;
-using System.ComponentModel.DataAnnotations;
 
 namespace Surging.Hero.Auth.IApplication.Authorization.Dtos
 {
@@ -12,5 +11,13 @@ namespace Surging.Hero.Auth.IApplication.Authorization.Dtos
 
         [RegularExpression(RegExpConstants.Password, ErrorMessage = "密码格式不正确")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "验证码不允许为空")]
+        public string Captcha { get; set; }
+
+        [Required(ErrorMessage = "表单标识不允许为空")]
+        public string Uuid { get; set; }
+
+        public long TenantId { get; set; }
     }
 }

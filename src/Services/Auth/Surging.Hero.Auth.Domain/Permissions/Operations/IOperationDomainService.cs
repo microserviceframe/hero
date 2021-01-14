@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Surging.Core.CPlatform.Ioc;
+using Surging.Cloud.CPlatform.Ioc;
 using Surging.Hero.Auth.IApplication.Permission.Dtos;
 
 namespace Surging.Hero.Auth.Domain.Permissions.Operations
@@ -11,5 +11,7 @@ namespace Surging.Hero.Auth.Domain.Permissions.Operations
         Task<UpdateOperationOutput> Update(UpdateOperationInput input);
         Task Delete(long permissionId);
         Task<IEnumerable<Operation>> GetAll();
+        Task<bool> CheckPermission(long operationId, string serviceId);
+        Task<IEnumerable<Operation>> GetOperationsByServiceId(string serviceId);
     }
 }

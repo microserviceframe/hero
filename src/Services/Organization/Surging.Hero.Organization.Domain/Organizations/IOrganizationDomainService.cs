@@ -1,7 +1,6 @@
-﻿using Surging.Core.CPlatform.Ioc;
-using Surging.Hero.Organization.Domain.Shared.Organizations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Surging.Cloud.CPlatform.Ioc;
 
 namespace Surging.Hero.Organization.Domain
 {
@@ -9,5 +8,7 @@ namespace Surging.Hero.Organization.Domain
     {
         Task<IEnumerable<Organization>> GetOrganizations();
         Task<IEnumerable<Organization>> GetSubOrgs(long orgId);
+
+        Task<IEnumerable<Organization>> GetParentsOrganizations(long orgId);
     }
 }

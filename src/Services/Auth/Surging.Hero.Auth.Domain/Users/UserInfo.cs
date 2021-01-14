@@ -1,11 +1,11 @@
-﻿using Surging.Core.Domain.Entities.Auditing;
+﻿using System;
+using Surging.Cloud.Domain.Entities.Auditing;
 using Surging.Hero.Auth.Domain.Shared.Users;
 using Surging.Hero.Common;
-using System;
 
 namespace Surging.Hero.Auth.Domain.Users
 {
-    public class UserInfo : FullAuditedEntity<long>
+    public class UserInfo : FullAuditedEntity<long>, IOrgAudited, IMultiTenant
     {
         public UserInfo()
         {
@@ -48,14 +48,12 @@ namespace Surging.Hero.Auth.Domain.Users
 
         public string Memo { get; set; }
 
-        public DateTime? LastLoginTime { get; set; } 
+        public DateTime? LastLoginTime { get; set; }
 
         public int LoginFailedCount { get; set; }
 
         public Status Status { get; set; }
-
-
+        
+        public long? TenantId { get; set; }
     }
 }
-
-

@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="16.0" Sdk="Microsoft.Docker.Sdk">
+<Project ToolsVersion="16.0" Sdk="Microsoft.Docker.Sdk" DefaultTargets="Build">
   <PropertyGroup Label="Globals">
-    <ProjectGuid>fea0c318-ffed-4d39-8781-265718ca43dd</ProjectGuid>
-    <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectVersion>2.2</ProjectVersion>
-    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>{55E7E735-803F-47F6-9770-55CCA30ECB38}</ProjectGuid>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../../../.dockerignore" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
-	<None Include="docker-compose.vs.debug.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
     <None Include="docker-compose.yml" />
+    <None Include="../.dockerignore" />
   </ItemGroup>
 </Project>

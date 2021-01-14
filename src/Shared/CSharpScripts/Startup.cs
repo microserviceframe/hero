@@ -6,17 +6,18 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Surging.Core.CPlatform.Runtime.Server;
-using Surging.Core.CPlatform.Utilities;
-using Surging.Core.ProxyGenerator;
+using Surging.Cloud.CPlatform.Runtime;
+using Surging.Cloud.CPlatform.Runtime.Server;
+using Surging.Cloud.CPlatform.Utilities;
+using Surging.Cloud.ProxyGenerator;
 
 namespace Surging.Hero.ServiceHost
 {
     public class Startup
     {
-        private readonly IConfigurationBuilder _configurationBuilder;
-        private const string updateHostActionRoute = "v1/api/action/init";
+        private const string updateHostActionRoute = "api/action/init";
         private const int hostNameSegmentLength = 3;
+        private readonly IConfigurationBuilder _configurationBuilder;
 
         public Startup(IConfigurationBuilder config)
         {
@@ -47,40 +48,33 @@ namespace Surging.Hero.ServiceHost
                 ServiceHost = GetServiceHost(p.Type.FullName),
                 Application = GetApplication(p.Type.FullName),
                 WebApi = p.RoutePath,
+                Method = string.Join(",", p.Methods),
                 Name = p.Descriptor.GetMetadata<string>("GroupName"),
                 DisableNetwork = p.Descriptor.GetMetadata<bool>("DisableNetwork"),
                 EnableAuthorization = p.Descriptor.GetMetadata<bool>("EnableAuthorization"),
                 AllowPermission = p.Descriptor.GetMetadata<bool>("AllowPermission"),
                 Developer = p.Descriptor.GetMetadata<string>("Director"),
                 Date = GetDevDate(p.Descriptor.GetMetadata<string>("Date"))
-
             }).ToList();
-            var rpcParams = new Dictionary<string, object>() { { "actions", actions } };
+            var rpcParams = new Dictionary<string, object> {{"actions", actions}};
             try
             {
-                var result = serviceProxyProvider.Invoke<string>(rpcParams, updateHostActionRoute).Result;
+                var result = serviceProxyProvider.Invoke<string>(rpcParams, updateHostActionRoute, HttpMethod.POST)
+                    .Result;
                 if (result.IsNullOrEmpty())
-                {
-                    logger.LogInformation("≥ı ºªØAction ß∞‹");
-                }
+                    logger.LogInformation("ÂàùÂßãÂåñActionÂ§±Ë¥•");
                 else
-                {
                     logger.LogInformation(result);
-                }
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message, ex);
             }
-
         }
 
         private static DateTime? GetDevDate(string dateStr)
         {
-            if (dateStr.IsNullOrEmpty())
-            {
-                return null;
-            }
+            if (dateStr.IsNullOrEmpty()) return null;
             return Convert.ToDateTime(dateStr);
         }
 

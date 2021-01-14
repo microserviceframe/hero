@@ -1,9 +1,9 @@
-﻿using Surging.Core.Domain.Entities.Auditing;
+﻿using Surging.Cloud.Domain.Entities.Auditing;
 using Surging.Hero.BasicData.Domain.Shared.Wordbooks;
 
 namespace Surging.Hero.BasicData.Domain.Wordbooks
 {
-    public class Wordbook : FullAuditedEntity<long>
+    public class Wordbook : FullAuditedEntity<long>, IMultiTenant
     {
         public string Code { get; set; }
 
@@ -14,5 +14,7 @@ namespace Surging.Hero.BasicData.Domain.Wordbooks
         public string Memo { get; set; }
 
         public bool IsSysPreset { get; set; } = false;
+        
+        public long? TenantId { get; set; }
     }
 }

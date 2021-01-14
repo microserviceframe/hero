@@ -1,10 +1,16 @@
-﻿using Surging.Core.Domain;
-using Surging.Core.Domain.PagedAndSorted;
+﻿using Surging.Cloud.CPlatform.Utilities;
+using Surging.Cloud.Domain.PagedAndSorted;
+using Surging.Hero.Common;
 
 namespace Surging.Hero.Auth.IApplication.Role.Dtos
 {
-    public class QueryRoleInput : PagedResultRequestDto
+    public class QueryRoleInput : PagedAndSingleSortedResultRequest
     {
+
         public string SearchKey { get; set; }
+
+        public long[] OrgIds { get; set; }
+
+        public Status? Status { get; set; }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Surging.Core.AutoMapper;
-using Surging.Core.Domain;
-using Surging.Core.Domain.PagedAndSorted;
-using Surging.Core.Domain.PagedAndSorted.Extensions;
-using Surging.Core.ProxyGenerator;
-using Surging.Core.Validation.DataAnnotationValidation;
+using Surging.Cloud.AutoMapper;
+using Surging.Cloud.CPlatform.Exceptions;
+using Surging.Cloud.CPlatform.Utilities;
+using Surging.Cloud.Domain.PagedAndSorted;
+using Surging.Cloud.Domain.PagedAndSorted.Extensions;
+using Surging.Cloud.ProxyGenerator;
+using Surging.Cloud.Validation.DataAnnotationValidation;
+using Surging.Hero.Auth.IApplication.FullAuditDtos;
+using Surging.Hero.Auth.IApplication.User;
 using Surging.Hero.BasicData.Domain.Wordbooks;
 using Surging.Hero.BasicData.IApplication.Wordbook;
 using Surging.Hero.BasicData.IApplication.Wordbook.Dtos;
@@ -54,28 +57,47 @@ namespace Surging.Hero.BasicData.Application.Wordbook
 
         public async Task<GetWordbookOutput> Get(long id)
         {
-            return (await _wordbookDomainService.GetWordbook(id)).MapTo<GetWordbookOutput>();
+            var wordbookOutput = (await _wordbookDomainService.GetWordbook(id)).MapTo<GetWordbookOutput>();
+            await wordbookOutput.SetAuditInfo();
+            return wordbookOutput;
         }
 
         public async Task<GetWordbookItemOutput> GetWordbookItem(long id)
         {
-            return (await _wordbookDomainService.GetWordbookItem(id)).MapTo<GetWordbookItemOutput>();
+            var wordbookOutput = (await _wordbookDomainService.GetWordbookItem(id)).MapTo<GetWordbookItemOutput>();
+            await wordbookOutput.SetAuditInfo();
+            return wordbookOutput;
         }
 
-        public async Task<IEnumerable<GetWordbookItemOutput>> GetWordbookItemByCode(string code)
+        public async Task<IEnumerable<GetWordbookItemOutput>> GetWordbookItemsByCode(string code)
         {
-            return await _wordbookDomainService.GetWordbookItemByCode(code);
+            var wordbookOutputs = await _wordbookDomainService.GetWordbookItemsByCode(code);
+            foreach (var wordbookOutput in wordbookOutputs) await wordbookOutput.SetAuditInfo();
+            return wordbookOutputs;
         }
 
-        public async Task<IEnumerable<GetWordbookItemOutput>> GetWordbookItems(long wordbookId)
+        public async Task<GetWordbookItemOutput> GetWordbookItemByKey(string wordbookCode, string key)
         {
-            return await _wordbookDomainService.GetWordbookItems(wordbookId);
+            var wordbookOutput = await _wordbookDomainService.GetWordbookItemByKey(wordbookCode, key);
+            return wordbookOutput;
         }
 
-        public async Task<IPagedResult<GetWordbookOutput>> Query(QueryWordbookInput query)
+        public async Task<IPagedResult<GetWordbookItemOutput>> GetWordbookItems(GetWordbookItemsInput input)
+        {
+            if (input.Code.IsNullOrEmpty() && !input.WordbookId.HasValue)
+                throw new BusinessException("字典编码和字典Id不能同时为空");
+            var outputs = await _wordbookDomainService.GetWordbookItems(input);
+            foreach (var output in outputs.Items) await output.SetAuditInfo();
+            return outputs;
+        }
+
+        public async Task<IPagedResult<GetWordbookOutput>> Search(QueryWordbookInput query)
         {
             var queryResult = await _wordbookDomainService.QueryWordbooks(query);
-            return queryResult.Item1.MapTo<IEnumerable<GetWordbookOutput>>().GetPagedResult(queryResult.Item2);
+            var outputs = queryResult.Item1.MapTo<IEnumerable<GetWordbookOutput>>().GetPagedResult(queryResult.Item2);
+            // todo 抽象
+            foreach (var output in outputs.Items) await output.SetAuditInfo();
+            return outputs;
         }
 
         public async Task<string> Update(UpdateWordbookInput input)

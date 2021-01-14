@@ -8,13 +8,11 @@ namespace Surging.Hero.Auth.IApplication.Authorization.Dtos
 
         public long MenuId { get; set; }
 
-        public string Code { get; set; }
-
-        public int Level { get; set; }
-
         public string Icon { get; set; }
 
         public string Name { get; set; }
+
+        public string Title { get; set; }
 
         public OperationMold Mold { get; set; }
 

@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Surging.Core.AutoMapper;
-using Surging.Core.ProxyGenerator;
-using Surging.Core.Validation.DataAnnotationValidation;
+using Surging.Cloud.ProxyGenerator;
+using Surging.Cloud.Validation.DataAnnotationValidation;
 using Surging.Hero.Organization.Domain.Organizations;
 using Surging.Hero.Organization.IApplication.Corporation;
 using Surging.Hero.Organization.IApplication.Corporation.Dtos;
@@ -11,15 +10,22 @@ namespace Surging.Hero.Organization.Application.Corporation
     public class CorporationAppService : ProxyServiceBase, ICorporationAppService
     {
         private readonly ICorporationDomainService _corporationDomainService;
+
         public CorporationAppService(ICorporationDomainService corporationDomainService)
         {
             _corporationDomainService = corporationDomainService;
         }
+
         public async Task<CreateCorporationOutput> Create(CreateCorporationInput input)
         {
             input.CheckDataAnnotations().CheckValidResult();
             return await _corporationDomainService.CreateCorporation(input);
-           
+        }
+
+        public async Task<CreateCorporationOutput> CreateByTenant(CreateCorporationByTenantInput input)
+        {
+            input.CheckDataAnnotations().CheckValidResult();
+            return await _corporationDomainService.CreateByTenant(input);
         }
 
         public async Task<string> DeleteByOrgId(long orgId)
@@ -37,7 +43,6 @@ namespace Surging.Hero.Organization.Application.Corporation
         {
             input.CheckDataAnnotations().CheckValidResult();
             return await _corporationDomainService.UpdateCorporation(input);
-            
         }
     }
 }
