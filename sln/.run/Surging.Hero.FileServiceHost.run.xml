@@ -1,8 +1,8 @@
 ﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Surging.Hero.AuthHost" type="DotNetProject" factoryName=".NET Project" singleton="true">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/../src/Services/Auth/Surging.Hero.AuthHost/bin/Debug/net5.0/Surging.Hero.AuthHost.dll" />
+  <configuration default="false" name="Surging.Hero.FileServiceHost" type="DotNetProject" factoryName=".NET Project">
+    <option name="EXE_PATH" value="$PROJECT_DIR$/../src/Services/FileService/Surging.Hero.FileServiceHost/bin/Debug/net5.0/Surging.Hero.FileServiceHost.dll" />
     <option name="PROGRAM_PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../src/Services/Auth/Surging.Hero.AuthHost/bin/Debug/net5.0" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../src/Services/FileService/Surging.Hero.FileServiceHost/bin/Debug/net5.0" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <envs>
       <env name="EventBusUserName" value="rabbitmq" />
@@ -10,20 +10,18 @@
       <env name="LockRedisConnection" value="127.0.0.1:16379" />
       <env name="ForceDisplayStackTrace" value="true" />
       <env name="LogLevel" value="Information" />
-      <env name="RpcPort" value="1101" />
+      <env name="RpcPort" value="1105" />
       <env name="EventBusConnection" value="127.0.0.1" />
       <env name="UseEngineParts" value="ServiceProxyModule;DotNettyModule;Log4netModule;MessagePackModule;LockModule;ZookeeperModule;EventBusRabbitMQModule;CachingModule;KestrelHttpModule;ApiGeteWayModule;AutoMapperModule;DapperModule;" />
       <env name="HostIp" value="0.0.0.0" />
-      <env name="HttpPort" value="8091" />
+      <env name="HttpPort" value="8095" />
       <env name="ConnectTimeout" value="500" />
-      <env name="FORCED_DISPLAY_STACKTRACE" value="false" />
       <env name="surgingPath" value="configs/surgingSettings.json" />
       <env name="Libuv" value="true" />
       <env name="MaxConcurrentRequests" value="100" />
       <env name="EnableHealthCheck" value="false" />
       <env name="UseKestrelHttpParts" value="SwaggerModule;StageModule;" />
       <env name="eventBusPath" value="configs/eventBusSettings.json" />
-      <env name="DbType" value="MySql" />
       <env name="consulPath" value="configs/consul.json" />
       <env name="ExecutionTimeoutInMilliseconds" value="50000" />
       <env name="Register_SessionTimeout" value="1000" />
@@ -33,12 +31,11 @@
       <env name="cachePath" value="configs/cacheSettings.local.json" />
       <env name="Environment" value="Development" />
       <env name="AnnotationXmlDir" value="AnnotationXmlDir" />
-      <env name="ConnectionString" value="Server=www.liuhl-hero.top;Database=hero_auth;Uid=root;Port=3306;Pwd=qwe!P4ss;pooling=true;min pool size=5;max pool size=512;" />
     </envs>
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />
     <option name="RUNTIME_ARGUMENTS" value="" />
-    <option name="PROJECT_PATH" value="$PROJECT_DIR$/../src/Services/Auth/Surging.Hero.AuthHost/Surging.Hero.AuthHost.csproj" />
+    <option name="PROJECT_PATH" value="$PROJECT_DIR$/../src/Services/FileService/Surging.Hero.FileServiceHost/Surging.Hero.FileServiceHost.csproj" />
     <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
     <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
